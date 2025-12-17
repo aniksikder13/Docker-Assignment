@@ -13,12 +13,12 @@
 | `docker history <image_name>:<tag>` | Show layers of an image |
 | `docker push <image_name>:<tag>` | Push image to Docker Hub |
 
-# Docker Image Size Review
+### Docker Image Size Review
 
 Image: `anik313/docker-assignment-node-app:v1`  
 **Size:** 263MB  
 
-# Docker Image Layers Analysis
+### Docker Image Layers Analysis
 
 | Layer # | Command | Size |
 |---------|---------|------|
