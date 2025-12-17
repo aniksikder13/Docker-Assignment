@@ -6,7 +6,7 @@ services:
     image: anik313/docker-assignment-node-app:${APP_VERSION:-latest}
     container_name: todoapp
     ports:
-      - '${APP_PORT}:3000'
+      - '${APP_PORT}:${APP_PORT}'
     environment:
       NODE_ENV: '${NODE_ENV}'
       POSTGRES_HOST: db
