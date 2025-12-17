@@ -11,7 +11,8 @@ WORKDIR /app
 # Copy package files and install dependencies
 COPY package*.json ./
 
-RUN npm ci
+RUN --mount=type=cache,target=/root/.npm,sharing=locked \
+     npm ci && npm cache clean --force
 
 # Copy the rest of the application code
 COPY . .
@@ -23,10 +24,11 @@ FROM base AS production
 WORKDIR /app
 
 COPY package*.json ./
-RUN npm ci --omit=dev && npm cache clean --force
+RUN --mount=type=cache,target=/root/.npm,sharing=locked \
+     npm ci --omit=dev && npm cache clean --force
 
 # Copy only the necessary files for production
-COPY --from=builder /app/dist ./dist
+COPY --from=builder /app/dist ./
 
 # Add a non-root user to run the application
 RUN addgroup -S appgroup && \
@@ -35,7 +37,5 @@ RUN addgroup -S appgroup && \
 
 USER appuser
 
-EXPOSE 3000 5173 9229
-
 # Start the application
-CMD ["node", "dist/server.js"]
+CMD ["node", "server.js"]

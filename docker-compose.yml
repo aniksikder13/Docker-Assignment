@@ -1,0 +1,48 @@
+services:
+  app-prod:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: anik313/docker-assignment-node-app:${APP_VERSION:-latest}
+    container_name: todoapp
+    ports:
+      - '${APP_PORT}:3000'
+    environment:
+      NODE_ENV: '${NODE_ENV}'
+      POSTGRES_HOST: db
+      POSTGRES_PORT: '${POSTGRES_PORT}'
+      POSTGRES_DB: '${POSTGRES_DB}'
+      POSTGRES_USER: '${POSTGRES_USER}'
+      POSTGRES_PASSWORD: '${POSTGRES_PASSWORD}'
+      ALLOWED_ORIGINS: "${ALLOWED_ORIGINS}"
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: unless-stopped
+    read_only: true
+    networks:
+      - app-net
+
+  db:
+    image: postgres:18-alpine
+    container_name: app-db
+    environment:
+      POSTGRES_DB: '${POSTGRES_DB}'
+      POSTGRES_USER: '${POSTGRES_USER}'
+      POSTGRES_PASSWORD: '${POSTGRES_PASSWORD}'
+    volumes:
+      - app-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+    networks:
+      - app-net
+
+volumes:
+  app-data:
+
+networks:
+  app-net:

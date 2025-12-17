@@ -9,7 +9,7 @@ import { errorHandler, notFoundHandler } from './middleware/errorHandler.js';
 import todosRouter from './routes/todos.js';
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.APP_PORT || 3000;
 
 // Security middleware
 app.use(
@@ -50,7 +50,7 @@ app.use('/api/todos', todosRouter);
 
 // Serve static files in production
 if (process.env.NODE_ENV === 'production') {
-  const staticPath = resolve(process.cwd(), 'dist/client');
+  const staticPath = resolve(process.cwd(), 'client');
   app.use(express.static(staticPath));
 
   // Catch-all route for SPA
