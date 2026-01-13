@@ -1,0 +1,33 @@
+name: Code Quality Checks
+
+on:
+  push:
+    branches:
+      - feat/*
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Get code
+        uses: actions/checkout@v4
+      - name: Call action to install dependencies
+        uses: npm ci
+      - name: Lint code
+        run: npm run lint
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Get code
+        uses: actions/checkout@v4
+      - name: Call action to install dependencies
+        uses: ./.github/actions/deps_install
+      - name: Test code
+        id: run-tests
+        run: npm run test
+      - name: Upload test report
+        if: failure() && steps.run-tests.outcome == 'failure'
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-report
+          path: test.json
