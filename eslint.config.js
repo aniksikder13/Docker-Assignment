@@ -1,59 +1,69 @@
 import js from '@eslint/js';
-import typescript from '@typescript-eslint/eslint-plugin';
-import typescriptParser from '@typescript-eslint/parser';
-import prettier from 'eslint-config-prettier';
+import tseslint from 'typescript-eslint';
 import react from 'eslint-plugin-react';
 import reactHooks from 'eslint-plugin-react-hooks';
 
 export default [
+  // Base JS rules
   js.configs.recommended,
+
+  // TypeScript rules
+  ...tseslint.configs.recommended,
+
+  // Global settings
   {
-    files: ['**/*.{ts,tsx}'],
     languageOptions: {
-      parser: typescriptParser,
-      parserOptions: {
-        ecmaVersion: 2022,
-        sourceType: 'module',
-        ecmaFeatures: {
-          jsx: true,
-        },
-      },
+      ecmaVersion: 2021,
+      sourceType: 'module',
       globals: {
-        console: 'readonly',
+        // Node
         process: 'readonly',
-        Buffer: 'readonly',
-        __dirname: 'readonly',
-        __filename: 'readonly',
+        console: 'readonly',
+        global: 'readonly',
+
+        // Browser
+        window: 'readonly',
+        document: 'readonly',
+        fetch: 'readonly',
+
+        // DOM / timers
+        setTimeout: 'readonly',
+        clearTimeout: 'readonly',
       },
     },
+  },
+
+  // React
+  {
     plugins: {
-      '@typescript-eslint': typescript,
       react,
       'react-hooks': reactHooks,
-    },
-    rules: {
-      ...typescript.configs.recommended.rules,
-      ...react.configs.recommended.rules,
-      ...reactHooks.configs.recommended.rules,
-      '@typescript-eslint/no-unused-vars': ['error', { argsIgnorePattern: '^_' }],
-      '@typescript-eslint/explicit-function-return-type': 'off',
-      '@typescript-eslint/explicit-module-boundary-types': 'off',
-      '@typescript-eslint/no-explicit-any': 'warn',
-      'react/react-in-jsx-scope': 'off',
-      'react/prop-types': 'off',
     },
     settings: {
       react: {
         version: 'detect',
       },
     },
-  },
-  {
-    files: ['**/*.{js,jsx}'],
-    languageOptions: {
-      ecmaVersion: 2022,
-      sourceType: 'module',
+    rules: {
+      'react/react-in-jsx-scope': 'off', // React 17+
     },
   },
-  prettier,
+
+  // Test files (Vitest + jsdom)
+  {
+    files: ['**/*.test.ts', '**/*.test.tsx'],
+    languageOptions: {
+      globals: {
+        describe: 'readonly',
+        it: 'readonly',
+        expect: 'readonly',
+        vi: 'readonly',
+        beforeEach: 'readonly',
+        afterEach: 'readonly',
+      },
+    },
+    rules: {
+      '@typescript-eslint/no-explicit-any': 'off',
+    },
+  },
 ];
