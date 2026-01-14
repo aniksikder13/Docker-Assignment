@@ -80,6 +80,7 @@
     "prettier": "^3.6.2",
     "react": "19.1.1",
     "react-dom": "19.1.1",
+    "sonarqube-scanner": "^4.3.4",
     "supertest": "^7.1.4",
     "tailwindcss": "^4.1.13",
     "tsx": "^4.20.5",
