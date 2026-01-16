@@ -63,6 +63,8 @@ jobs:
     needs: sonarCloud
     runs-on: ubuntu-latest
     steps:
+      - name: Get code
+        uses: actions/checkout@v4
       - name: Call action to create PR to request
         uses: ./.github/actions/pr_request
         with:
