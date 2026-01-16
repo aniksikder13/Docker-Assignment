@@ -32,12 +32,12 @@ jobs:
             -t ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.DOCKER_IMAGE_NAME }}:${IMAGE_TAG} \
             .
 
-      # - name: Vulnerability Scan
-      #   uses: aquasecurity/trivy-action@0.33.1
-      #   with:
-      #     image-ref: ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.DOCKER_IMAGE_NAME }}:${IMAGE_TAG}
-      #     severity: HIGH,CRITICAL
-      #     format: 'table'
+      - name: Vulnerability Scan
+        uses: aquasecurity/trivy-action@0.33.1
+        with:
+          image-ref: ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.DOCKER_IMAGE_NAME }}:${IMAGE_TAG}
+          severity: HIGH,CRITICAL
+          format: 'table'
 
       - name: Push Docker image
         run: |
