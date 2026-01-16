@@ -1,0 +1,21 @@
+name: Create Pull Request to integration
+description: Creates a pull request to the integration branch.
+
+inputs:
+  github_token:
+    description: GitHub token for authentication
+    required: true
+
+runs:
+  using: "composite"
+  steps:
+    - name: Creating Pull Request
+      shell: bash
+      env:
+        GH_TOKEN: ${{ inputs.github_token }}
+      run: |
+        gh pr create \
+          --base integration \
+          --head ${{ github.ref_name }} \
+          --title "PR from ${{ github.ref_name }}" \
+          --body "Auto-created PR via GitHub Actions"

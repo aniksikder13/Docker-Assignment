@@ -4,6 +4,11 @@ on:
   push:
     branches:
       - feat/*
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
 
 jobs:
   lint:
@@ -12,9 +17,17 @@ jobs:
       - name: Get code
         uses: actions/checkout@v4
       - name: Call action to install dependencies
-        uses: npm ci
-      - name: Lint code
+        uses: ./.github/actions/deps_install
+      - name: Check if any files were changed
+        id: file-check
+        run: |
+          CHANGED=$(git diff --name-only ${{ github.event.before }} ${{ github.sha }} | wc -l)
+          echo "changed=$CHANGED" >> $GITHUB_OUTPUT
+
+      - name: Lint code conditionally
+        if: steps.file-check.outputs.changed != '0'
         run: npm run lint
+
   test:
     runs-on: ubuntu-latest
     steps:
@@ -31,3 +44,32 @@ jobs:
         with:
           name: test-report
           path: test.json
+  sonarCloud:
+    needs: test
+    runs-on: ubuntu-latest
+    environment: learning
+    steps:
+      - name: Get code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Call action to install dependencies
+        uses: ./.github/actions/deps_install
+      - name: Run SonarCloud Scan
+        uses: SonarSource/sonarqube-scan-action@v6
+        with:
+          args: >
+            -Dsonar.projectKey=${{ secrets.SONAR_PROJECT_KEY }}
+            -Dsonar.organization=${{ secrets.SONAR_ORGANIZATION }}
+            -Dsonar.host.url=${{ secrets.SONAR_HOST_URL }}
+            -Dsonar.login=${{ secrets.SONAR_TOKEN }}
+  pr_request:
+    needs: sonarCloud
+    runs-on: ubuntu-latest
+    steps:
+      - name: Get code
+        uses: actions/checkout@v4
+      - name: Call action to create PR to request
+        uses: ./.github/actions/pr_request
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
