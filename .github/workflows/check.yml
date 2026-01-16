@@ -63,10 +63,7 @@ jobs:
     needs: sonarCloud
     runs-on: ubuntu-latest
     steps:
-      - name: Create Pull Request
-        uses: peter-evans/create-pull-request@v8
+      - name: Call action to create PR to request
+        uses: ./.github/actions/pr_request
         with:
-          base: integration
-          branch: ${{ github.ref_name }}
-          title: "Auto PR from ${{ github.ref_name }}"
-          body: "Automated PR created by GitHub Actions"
+          github_token: ${{ secrets.GITHUB_TOKEN }}
